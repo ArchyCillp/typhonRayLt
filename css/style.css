@@ -30,6 +30,22 @@ input {
     margin: 10px 0 20px 0;
     padding: 0 10px;   /* 可选：添加一些内边距 */
 }
+
+.subtitle h2 {
+    font-size: 16px;
+    color: #666;
+    margin: 5px 0;
+    font-weight: normal;
+}
+
+.subtitle h3 {
+    font-size: 14px;
+    color: #888;
+    margin: 5px 0 20px 0;
+    font-weight: normal;
+    font-style: italic;
+}
+
 button {
     padding: 10px 20px;
     background: #007cba;
