@@ -1,0 +1,22 @@
+{
+    "nodes": [
+      {"id": "1", "name": "张三"},
+      {"id": "2", "name": "李四"},
+      {"id": "3", "name": "王五"}
+    ],
+    "edges": [
+      {
+        "source": "1", 
+        "target": "2", 
+        "relationship": "朋友", 
+        "description": "大学同学，关系很好"
+      },
+      {
+        "source": "2",
+        "target": "3",
+        "relationship": "朋友",
+        "description": "小学同学"
+      }
+    ]
+  }
+  

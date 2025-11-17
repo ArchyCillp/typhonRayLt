@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人物关系查询</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>人物关系查询</h1>
+        
+        <div class="search-box">
+            <input type="text" id="personA" placeholder="输入第一个人物" list="personList">
+            <input type="text" id="personB" placeholder="输入第二个人物" list="personList">
+            <datalist id="personList"></datalist>
+            <button id="searchBtn">查找关系</button>
+        </div>
+
+        <div id="loading" class="hidden">加载中...</div>
+        
+        <div id="result" class="result-container hidden">
+            <h3>关系路径：</h3>
+            <div id="pathResult"></div>
+        </div>
+
+        <div id="error" class="error hidden"></div>
+    </div>
+
+    <script src="js/graph.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
