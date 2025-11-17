@@ -1,3 +1,5 @@
+////////////////////////////////////////////////////////////////////////////////////
+// js/app.js
 class App {
     constructor() {
         this.graph = null;
@@ -93,7 +95,7 @@ class App {
                 <strong>${step.from}</strong> 
                 → <strong>${step.to}</strong>
                 <br>
-                <em>关系：${step.relationship}</em>
+                <em>剧情依据文件路径：${step.relationship}</em>
                 <br>
                 ${step.description}
             `;

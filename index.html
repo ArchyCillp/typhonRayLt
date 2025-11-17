@@ -3,12 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>人物关系查询</title>
+    <title>明日方舟人物关系查询（数据截至日期：2025年1月）</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
         <h1>人物关系查询</h1>
+
+         <!-- 添加这行 -->
+        <p class="update-notice">
+            1. 最近忙，抽空更新数据到最新<br>
+            2. 阿米娅、博士、凯尔希因关联过多暂不参与路径计算<br>
+            3. 后续将提供更多路径模式选择<br>
+            4. 目前仅包含游戏内的主线/活动/故事集/干员秘录等，暂未包含123罗德岛、漫画、音律联觉等周边内容<br>
+            5. 相识判定依据：使用大模型检测两人在邻近对话中是否有交流（当然可能有更好方案，但这是当前最简化的批处理方案）
+        </p>
         
         <div class="search-box">
             <input type="text" id="personA" placeholder="输入第一个人物" list="personList">

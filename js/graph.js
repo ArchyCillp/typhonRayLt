@@ -1,9 +1,12 @@
+////////////////////////////////////////////////////////////////////////////////////
+// js/graph.js
 class RelationshipGraph {
     constructor(nodes, edges) {
         this.nodes = nodes;
         this.edges = edges;
         this.adjacencyList = this.buildAdjacencyList();
         this.nameToIdMap = this.buildNameMap();
+        this.bannedNodes = this.buildBannedSet(); // 新增：构建禁止节点集合
     }
 
     buildAdjacencyList() {
@@ -36,9 +39,28 @@ class RelationshipGraph {
     buildNameMap() {
         const map = {};
         this.nodes.forEach(node => {
-            map[node.name] = node.id;
+            // 支持多个名字：names 数组中的每个名字都映射到同一个 id
+            if (node.names && Array.isArray(node.names)) {
+                node.names.forEach(name => {
+                    map[name] = node.id;
+                });
+            } else {
+                // 向后兼容：如果还是单个 name 字段
+                map[node.name] = node.id;
+            }
         });
         return map;
+    }
+
+    buildBannedSet() {
+        // 新增：构建禁止节点集合
+        const banned = new Set();
+        this.nodes.forEach(node => {
+            if (node.ban === true) {
+                banned.add(node.id);
+            }
+        });
+        return banned;
     }
 
     findShortestPath(personAName, personBName) {
@@ -46,6 +68,11 @@ class RelationshipGraph {
         const personB = this.nameToIdMap[personBName];
         
         if (!personA || !personB) {
+            return null;
+        }
+
+        // 新增：检查起点或终点是否被禁止
+        if (this.bannedNodes.has(personA) || this.bannedNodes.has(personB)) {
             return null;
         }
 
@@ -66,7 +93,8 @@ class RelationshipGraph {
             }
 
             for (const neighbor of this.adjacencyList[currentPerson]) {
-                if (!visited.has(neighbor.target)) {
+                // 新增：检查邻居节点是否被禁止
+                if (!this.bannedNodes.has(neighbor.target) && !visited.has(neighbor.target)) {
                     visited.add(neighbor.target);
                     const newPath = [...path, neighbor.target];
                     queue.push(newPath);
@@ -109,10 +137,29 @@ class RelationshipGraph {
 
     getPersonName(id) {
         const node = this.nodes.find(n => n.id === id);
-        return node ? node.name : '未知人物';
+        if (!node) return '未知人物';
+        
+        // 返回第一个名字作为显示用（通常是主名）
+        if (node.names && Array.isArray(node.names) && node.names.length > 0) {
+            return node.names[0];
+        }
+        return node.name || '未知人物';
     }
 
     getAllPersonNames() {
-        return this.nodes.map(node => node.name).sort();
+        const allNames = [];
+        this.nodes.forEach(node => {
+            // 新增：只返回未被禁止的节点名称
+            if (node.ban !== true) {
+                if (node.names && Array.isArray(node.names)) {
+                    // 添加所有名字
+                    allNames.push(...node.names);
+                } else {
+                    // 向后兼容
+                    allNames.push(node.name);
+                }
+            }
+        });
+        return allNames.sort();
     }
 }

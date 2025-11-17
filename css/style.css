@@ -22,6 +22,14 @@ input {
     border-radius: 4px;
 }
 
+.update-notice {
+    font-style: italic;
+    color: #888;
+    font-size: 14px;
+    text-align: left;  /* 改为左对齐 */
+    margin: 10px 0 20px 0;
+    padding: 0 10px;   /* 可选：添加一些内边距 */
+}
 button {
     padding: 10px 20px;
     background: #007cba;
