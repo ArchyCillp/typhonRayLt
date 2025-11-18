@@ -1,54 +1,82 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>明日方舟人物关系查询（数据截至日期：2025年1月）</title>
     <link rel="stylesheet" href="css/style.css">
+    <script>
+        // 检测设备类型并动态加载对应的 CSS
+        function loadDeviceSpecificCSS() {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+            if (isMobile) {
+                const mobileCSS = document.createElement('link');
+                mobileCSS.rel = 'stylesheet';
+                mobileCSS.href = 'css/style_phone.css';
+            }
+        }
+        document.addEventListener('DOMContentLoaded', loadDeviceSpecificCSS);
+        window.addEventListener('resize', loadDeviceSpecificCSS);
+    </script>
 </head>
+
 <body>
     <div class="container">
         <h1>明日方舟人物关系查询</h1>
         <div class="subtitle">
             <h2>数据截至日期：2025年1月（包含「相见欢」及之前内容）</h2>
-            <h2>目前支持功能：最短路径查询</h2>
+            <h2>支持功能：最短路径查询 | 智能路径查询</h2>
             <h3>静态网页大小：6,118 KB · 境外服务器 · 加载可能较慢，请耐心等待</h3>
         </div>
         <p class="update-notice">
             1. 最近忙，抽空更新数据到最新<br>
-            2. 阿米娅、博士、凯尔希因关联过多暂不参与路径计算<br>
+            2. 最短路径查询中阿米娅、博士、凯尔希因关联过多暂不参与路径计算<br>
             3. 后续将提供更多路径模式选择<br>
             4. 目前仅包含游戏内的主线/活动/故事集/干员秘录等，暂未包含干员档案、语音、123罗德岛、漫画、音律联觉等周边内容<br>
             5. 相识判定依据：使用大模型检测两人在邻近对话中是否有双方当面都参与的交流，（可能有更好方案，暂用这套简化的批处理方案方便大模型处理）<br>
             6. 因此可能出现一些bug，比如能天使因为在2025年1月之前没有和蕾缪安当面谈过话，只有个人的提及，所以必须走莫斯提马才能认识姐姐。后续考虑如何修复。
         </p>
-        
+
         <div class="search-box">
             <input type="text" id="personA" placeholder="输入第一个人物" list="personList">
             <input type="text" id="personB" placeholder="输入第二个人物" list="personList">
             <datalist id="personList"></datalist>
-            <button id="searchBtn">查找关系</button>
+            <div class="search-buttons">
+                <button id="searchBtn" class="btn-primary">查找最短路径</button>
+                <div class="tooltip-container">
+                    <button id="smartSearchBtn" class="btn-secondary">查找智能路径</button>
+                    <span class="tooltip-icon">?</span>
+                    <div class="tooltip-text">
+                        此路径避免了过度依赖高度连接的人物，认识的人越多的人出现在路径中的权重越低，目标是让路径上的所有人认识的人的总和尽可能小。
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="loading" class="hidden">加载中...</div>
+
+            <div id="result" class="result-container hidden">
+                <h3>关系路径：</h3>
+                <div id="pathResult"></div>
+            </div>
+
+            <div id="error" class="error hidden"></div>
         </div>
 
-        <div id="loading" class="hidden">加载中...</div>
-        
-        <div id="result" class="result-container hidden">
-            <h3>关系路径：</h3>
-            <div id="pathResult"></div>
-        </div>
+        <footer class="footer">
+            <div class="footer-content">
+                <p>本<a href="https://github.com/ArchyCillp/typhonRayLt" target="_blank" class="footer-link">项目</a>MIT
+                    协议开源，允许自由使用、修改和分发。</p>
+                <p>数据整理与制作：<a href="https://github.com/ArchyCillp" target="_blank" class="footer-link">ArchyCillp</a>
+                </p>
+                <p>《明日方舟》剧情内容版权归上海鹰角网络科技有限公司所有。</p>
+            </div>
+        </footer>
 
-        <div id="error" class="error hidden"></div>
-    </div>
-
-    <footer class="footer">
-        <div class="footer-content">
-            <p>本<a href="https://github.com/ArchyCillp/typhonRayLt" target="_blank" class="footer-link">项目</a>MIT 协议开源，允许自由使用、修改和分发。</p>
-            <p>数据整理与制作：<a href="https://github.com/ArchyCillp" target="_blank" class="footer-link">ArchyCillp</a></p>
-            <p>《明日方舟》剧情内容版权归上海鹰角网络科技有限公司所有。</p>
-        </div>
-    </footer>
-
-    <script src="js/graph.js"></script>
-    <script src="js/app.js"></script>
+        <script src="js/priority-queue.js"></script>
+        <script src="js/graph.js"></script>
+        <script src="js/app.js"></script>
 </body>
+
 </html>

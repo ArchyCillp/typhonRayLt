@@ -35,15 +35,18 @@ body {
 }
 
 .btn-primary, .btn-secondary {
-    padding: 12px 25px;
+    padding: 12px 20px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
     transition: all 0.3s ease;
-    min-width: 160px;
+    width: 100%; /* 让按钮填满容器宽度 */
+    box-sizing: border-box;
+    min-height: 44px; /* 手机端最小触摸目标 */
 }
+
 
 .btn-primary {
     background-color: #4CAF50;
@@ -213,13 +216,15 @@ button:disabled {
 .tooltip-container {
     position: relative;
     display: inline-block;
+    flex: 1;
+    max-width: 200px; /* 控制最大宽度，与第一个按钮保持一致 */
 }
 
 /* 工具提示图标 - 增大触摸目标 */
 .tooltip-icon {
     position: absolute;
-    top: -10px;
-    right: -10px;
+    top: -8px;
+    right: -8px;
     width: 24px;
     height: 24px;
     background: #ff9800;
@@ -233,7 +238,6 @@ button:disabled {
     cursor: help;
     border: 2px solid white;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
     z-index: 10;
 }
 
@@ -283,31 +287,43 @@ button:disabled {
 
 /* 手机端特定样式 */
 @media (max-width: 768px) {
+    .search-buttons {
+        flex-direction: row; /* 保持水平排列 */
+        gap: 10px;
+    }
+    
+    .btn-primary, .btn-secondary {
+        flex: 1;
+        min-width: 0; /* 允许flex收缩 */
+    }
+    
+    .tooltip-container {
+        max-width: none; /* 移除最大宽度限制 */
+    }
+    
     .tooltip-icon {
         width: 28px;
         height: 28px;
         font-size: 16px;
-        top: -12px;
-        right: -12px;
+        top: -10px;
+        right: -10px;
     }
     
     .tooltip-text {
         width: 280px;
         max-width: 90vw;
-        font-size: 14px;
-        padding: 14px;
-    }
-    
-    /* 手机端提示框位置调整 */
-    .tooltip-text {
-        bottom: 135%;
         left: 50%;
         transform: translateX(-50%);
     }
+}
+
+@media (max-width: 480px) {
+    .search-buttons {
+        flex-wrap: wrap; /* 允许换行 */
+    }
     
-    .tooltip-text.mobile-right {
-        left: auto;
-        right: 0;
-        transform: none;
+    .btn-primary, .btn-secondary {
+        min-height: 48px; /* 更大的触摸目标 */
+        font-size: 15px;
     }
 }

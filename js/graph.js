@@ -6,7 +6,8 @@ class RelationshipGraph {
         this.edges = edges;
         this.adjacencyList = this.buildAdjacencyList();
         this.nameToIdMap = this.buildNameMap();
-        this.bannedNodes = this.buildBannedSet(); // 新增：构建禁止节点集合
+        this.bannedNodes = this.buildBannedSet();
+        this.nodeDegrees = this.calculateNodeDegrees(); 
     }
 
     buildAdjacencyList() {
@@ -53,7 +54,7 @@ class RelationshipGraph {
     }
 
     buildBannedSet() {
-        // 新增：构建禁止节点集合
+        // 构建禁止节点集合
         const banned = new Set();
         this.nodes.forEach(node => {
             if (node.ban === true) {
@@ -71,7 +72,7 @@ class RelationshipGraph {
             return null;
         }
 
-        // 新增：检查起点或终点是否被禁止
+        // 检查起点或终点是否被禁止
         if (this.bannedNodes.has(personA) || this.bannedNodes.has(personB)) {
             return null;
         }
@@ -93,7 +94,7 @@ class RelationshipGraph {
             }
 
             for (const neighbor of this.adjacencyList[currentPerson]) {
-                // 新增：检查邻居节点是否被禁止
+                // 检查邻居节点是否被禁止
                 if (!this.bannedNodes.has(neighbor.target) && !visited.has(neighbor.target)) {
                     visited.add(neighbor.target);
                     const newPath = [...path, neighbor.target];
@@ -105,7 +106,73 @@ class RelationshipGraph {
         return null; // 没有找到路径
     }
 
-    enrichPathWithDetails(path) {
+    findWeightedShortestPath(personAName, personBName) {
+        const personA = this.nameToIdMap[personAName];
+        const personB = this.nameToIdMap[personBName];
+        
+        if (!personA || !personB) {
+            return null;
+        }
+    
+        if (personA === personB) {
+            return [];
+        }
+    
+        // Dijkstra算法 - 智能路径不检查ban
+        const distances = {};
+        const previous = {};
+        const visited = new Set();
+        const priorityQueue = new MinPriorityQueue();
+        
+        // 初始化
+        this.nodes.forEach(node => {
+            distances[node.id] = node.id === personA ? 0 : Infinity;
+            previous[node.id] = null;
+        });
+        
+        priorityQueue.enqueue(personA, 0);
+        
+        while (!priorityQueue.isEmpty()) {
+            const { element: currentPerson, priority: currentDistance } = priorityQueue.dequeue();
+            
+            if (visited.has(currentPerson)) continue;
+            visited.add(currentPerson);
+            
+            if (currentPerson === personB) {
+                // 构建路径
+                const path = [];
+                let node = personB;
+                while (node !== null) {
+                    path.unshift(node);
+                    node = previous[node];
+                }
+                return this.enrichPathWithDetails(path, true); // 参数表示是智能路径
+            }
+            
+            for (const neighbor of this.adjacencyList[currentPerson]) {
+                if (visited.has(neighbor.target)) continue;
+                
+                // 计算权重：中间节点的度数作为cost
+                // 起始和终止节点不计入
+                let cost = 0;
+                if (currentPerson !== personA && currentPerson !== personB) {
+                    cost = this.nodeDegrees[currentPerson] || 1;
+                }
+                
+                const newDistance = currentDistance + cost;
+                
+                if (newDistance < distances[neighbor.target]) {
+                    distances[neighbor.target] = newDistance;
+                    previous[neighbor.target] = currentPerson;
+                    priorityQueue.enqueue(neighbor.target, newDistance);
+                }
+            }
+        }
+        
+        return null; // 没有找到路径
+    }
+
+    enrichPathWithDetails(path, isWeightedPath = false) {
         const result = [];
         
         for (let i = 0; i < path.length - 1; i++) {
@@ -116,17 +183,25 @@ class RelationshipGraph {
             const edge = this.findEdge(from, to);
             
             if (edge) {
+                const fromDegree = this.nodeDegrees[from] || 0;
+                const toDegree = this.nodeDegrees[to] || 0;
+                
                 result.push({
                     from: this.getPersonName(from),
                     to: this.getPersonName(to),
                     relationship: edge.relationship,
-                    description: edge.description
+                    description: edge.description,
+                    // 度数信息
+                    fromDegree: fromDegree,
+                    toDegree: toDegree,
+                    isWeightedPath: isWeightedPath
                 });
             }
         }
         
         return result;
     }
+    
 
     findEdge(from, to) {
         return this.edges.find(edge => 
@@ -149,7 +224,7 @@ class RelationshipGraph {
     getAllPersonNames() {
         const allNames = [];
         this.nodes.forEach(node => {
-            // 新增：只返回未被禁止的节点名称
+            // 只返回未被禁止的节点名称
             if (node.ban !== true) {
                 if (node.names && Array.isArray(node.names)) {
                     // 添加所有名字
@@ -161,5 +236,82 @@ class RelationshipGraph {
             }
         });
         return allNames.sort();
+    }
+
+    findWeightedShortestPath(personAName, personBName) {
+        const personA = this.nameToIdMap[personAName];
+        const personB = this.nameToIdMap[personBName];
+        
+        if (!personA || !personB) {
+            return null;
+        }
+    
+        if (personA === personB) {
+            return [];
+        }
+    
+        // 计算所有节点的度数
+        const degrees = this.calculateNodeDegrees();
+        
+        // Dijkstra算法
+        const distances = {};
+        const previous = {};
+        const visited = new Set();
+        const priorityQueue = new MinPriorityQueue();
+        
+        // 初始化
+        this.nodes.forEach(node => {
+            distances[node.id] = node.id === personA ? 0 : Infinity;
+            previous[node.id] = null;
+        });
+        
+        priorityQueue.enqueue(personA, 0);
+        
+        while (!priorityQueue.isEmpty()) {
+            const { element: currentPerson, priority: currentDistance } = priorityQueue.dequeue();
+            
+            if (visited.has(currentPerson)) continue;
+            visited.add(currentPerson);
+            
+            if (currentPerson === personB) {
+                // 构建路径
+                const path = [];
+                let node = personB;
+                while (node !== null) {
+                    path.unshift(node);
+                    node = previous[node];
+                }
+                return this.enrichPathWithDetails(path);
+            }
+            
+            for (const neighbor of this.adjacencyList[currentPerson]) {
+                if (visited.has(neighbor.target)) continue;
+                
+                // 计算权重：中间节点的度数作为cost
+                // 起始和终止节点不计入
+                let cost = 0;
+                if (currentPerson !== personA && currentPerson !== personB) {
+                    cost = degrees[currentPerson] || 1;
+                }
+                
+                const newDistance = currentDistance + cost;
+                
+                if (newDistance < distances[neighbor.target]) {
+                    distances[neighbor.target] = newDistance;
+                    previous[neighbor.target] = currentPerson;
+                    priorityQueue.enqueue(neighbor.target, newDistance);
+                }
+            }
+        }
+        
+        return null; // 没有找到路径
+    }
+    
+    calculateNodeDegrees() {
+        const degrees = {};
+        this.nodes.forEach(node => {
+            degrees[node.id] = this.adjacencyList[node.id].length;
+        });
+        return degrees;
     }
 }
