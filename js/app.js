@@ -97,7 +97,14 @@ class App {
         const path = this.graph.findWeightedShortestPath(personA, personB);
         
         if (path === null) {
-            this.showError('未找到这两个人物之间的关系路径');
+            // 检查具体是哪个名字不存在
+            if (!this.graph.nameToIdMap[personA]) {
+                this.showError(`"${personA}" 人物不存在，可能是未收录或者拼写有误`);
+            } else if (!this.graph.nameToIdMap[personB]) {
+                this.showError(`"${personB}" 人物不存在，可能是未收录或者拼写有误`);
+            } else {
+                this.showError('未找到这两个人物之间的关系路径');
+            }
         } else if (path.length === 0) {
             this.showResult('这是同一个人物');
         } else {
@@ -130,7 +137,14 @@ class App {
         const path = this.graph.findShortestPath(personA, personB);
         
         if (path === null) {
-            this.showError('未找到这两个人物之间的关系路径');
+            // 检查具体是哪个名字不存在
+            if (!this.graph.nameToIdMap[personA]) {
+                this.showError(`"${personA}" 人物不存在，可能是未收录或者拼写有误`);
+            } else if (!this.graph.nameToIdMap[personB]) {
+                this.showError(`"${personB}" 人物不存在，可能是未收录或者拼写有误`);
+            } else {
+                this.showError('未找到这两个人物之间的关系路径');
+            }
         } else if (path.length === 0) {
             this.showResult('这是同一个人物');
         } else {
