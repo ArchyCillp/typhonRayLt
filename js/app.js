@@ -99,9 +99,9 @@ class App {
         if (path === null) {
             // 检查具体是哪个名字不存在
             if (!this.graph.nameToIdMap[personA]) {
-                this.showError(`"${personA}" 人物不存在，可能是未收录或者拼写有误`);
+                this.showError(`"${personA}" 人物不存在，可能是未收录或者拼写有误; 如果是异格干员可以尝试原型，如果含英文请确保拼写正确`);
             } else if (!this.graph.nameToIdMap[personB]) {
-                this.showError(`"${personB}" 人物不存在，可能是未收录或者拼写有误`);
+                this.showError(`"${personB}" 人物不存在，可能是未收录或者拼写有误; 如果是异格干员可以尝试原型，如果含英文请确保拼写正确`);
             } else {
                 this.showError('未找到这两个人物之间的关系路径');
             }
@@ -139,9 +139,9 @@ class App {
         if (path === null) {
             // 检查具体是哪个名字不存在
             if (!this.graph.nameToIdMap[personA]) {
-                this.showError(`"${personA}" 人物不存在，可能是未收录或者拼写有误`);
+                this.showError(`"${personA}" 人物不存在，可能是未收录或者拼写有误; 如果是异格干员可以尝试原型，如果含英文请确保拼写正确`);
             } else if (!this.graph.nameToIdMap[personB]) {
-                this.showError(`"${personB}" 人物不存在，可能是未收录或者拼写有误`);
+                this.showError(`"${personB}" 人物不存在，可能是未收录或者拼写有误; 如果是异格干员可以尝试原型，如果含英文请确保拼写正确`);
             } else {
                 this.showError('未找到这两个人物之间的关系路径');
             }
